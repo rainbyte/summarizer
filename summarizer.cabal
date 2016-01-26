@@ -20,6 +20,7 @@ library
                      , NLP.Summarizer.Sentence
                      , NLP.Summarizer.Arguments
                      , NLP.Summarizer.Dictionary
+                     , NLP.Summarizer.Stemmer
   build-depends:       base >= 4.7 && < 5
                      , containers >= 0.5.6.2 && < 0.6
                      , hxt >= 9.3.1.15 && < 9.4

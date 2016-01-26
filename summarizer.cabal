@@ -21,6 +21,7 @@ library
                      , NLP.Summarizer.Arguments
                      , NLP.Summarizer.Article
                      , NLP.Summarizer.Dictionary
+                     , NLP.Summarizer.Grader
                      , NLP.Summarizer.Stemmer
   build-depends:       base >= 4.7 && < 5
                      , containers >= 0.5.6.2 && < 0.6

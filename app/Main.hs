@@ -18,7 +18,7 @@ data CliOptions = CliOptions
   , input :: Text <?> "text to summarize"
 --  , output :: Maybe FilePath <?> "output file [default = stdout]"
 --  , html :: Bool <?> "output as html"
---  , keywords :: Bool <?> "only output keywords"
+  , keywords :: Maybe Bool <?> "only output keywords"
 --  , about :: Bool <?> "only output the summary"
 --  , version :: Bool <?> "show version information"
   } deriving (Generic, Show)
@@ -32,9 +32,11 @@ main = do
   let txt = unHelpful (input cliOptions)
       dict = fromMaybe "es" $ unHelpful (dictionary cliOptions)
       ratio' = fromMaybe 20 $ unHelpful (ratio cliOptions)
+      showKeywords = fromMaybe False $ unHelpful (keywords cliOptions)
 
   result <- summarize dict ratio' txt
   mapM_ TIO.putStrLn (summarySentences result)
-  mapM_ TIO.putStrLn (summaryKeywords result)
+  when showKeywords $
+    mapM_ TIO.putStrLn (summaryKeywords result)
 
   pure ()

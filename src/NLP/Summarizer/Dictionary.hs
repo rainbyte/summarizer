@@ -1,4 +1,5 @@
 {-# LANGUAGE Arrows, NoMonomorphismRestriction, OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module NLP.Summarizer.Dictionary
   ( Dictionary (..)
@@ -8,10 +9,14 @@ module NLP.Summarizer.Dictionary
 
 import NLP.Summarizer.Term
 
+import qualified Data.ByteString as BS
+import qualified Data.FileEmbed as FE
 import Data.Map (Map)
 import qualified Data.Map as Map
+import Data.Maybe
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
 import Text.XML.HXT.Core
 
 data Dictionary =
@@ -30,12 +35,18 @@ data Dictionary =
              }
   deriving Show
 
+dictFiles :: [(FilePath, BS.ByteString)]
+dictFiles = $(FE.embedDir "dicts")
+
 -- Create a dictionary based on language dependent XML
-loadFromFile :: String -> IO Dictionary
-loadFromFile lang = do
-  let filename = "dicts/" ++ lang ++ ".xml"
-  [dict] <- runX (readDocument [withValidate no] filename >>> processXml)
-  return dict
+loadFromFile :: String -> Dictionary
+loadFromFile lang =
+  let dictMappings = Map.fromList dictFiles
+      dictContent = fromJust $
+        Map.lookup (lang ++ ".xml") dictMappings
+      decodedContent :: String
+      decodedContent = T.unpack (TE.decodeUtf8 dictContent)
+  in head $ runLA (xreadDoc >>> processXml) decodedContent
 
 toText :: (ArrowXml a) => a XmlTree Text
 toText = getChildren >>> getText >>> arr T.pack

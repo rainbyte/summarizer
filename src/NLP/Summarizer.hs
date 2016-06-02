@@ -21,16 +21,16 @@ data SummarizerResult = SummarizerResult
 summarize :: Text -- ^ dictionary to use (language)
           -> Int  -- ^ summarization % ratio
           -> Text -- ^ text to summarize
-          -> IO SummarizerResult
-summarize lang ratio' txt = do
-  dict <- loadFromFile (T.unpack lang)
-  let args = SummarizerArguments
+          -> SummarizerResult
+summarize lang ratio' txt =
+  let dict = loadFromFile (T.unpack lang)
+      args = SummarizerArguments
         { dictionaryLanguage = lang
         , inputString = txt
         , ratio = RatioByPercent ratio'
         }
       art = (highlight args . grade . parseText txt . createArticle) dict
-  pure SummarizerResult { summarySentences =
+  in   SummarizerResult { summarySentences =
                             map originalSentence (sentences art)
                         , summaryKeywords = concepts art
                         }

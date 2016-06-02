@@ -34,7 +34,7 @@ main = do
       ratio' = fromMaybe 20 $ unHelpful (ratio cliOptions)
       showKeywords = fromMaybe False $ unHelpful (keywords cliOptions)
 
-  result <- summarize dict ratio' txt
+  let result = summarize dict ratio' txt
   mapM_ TIO.putStrLn (summarySentences result)
   when showKeywords $
     mapM_ TIO.putStrLn (summaryKeywords result)

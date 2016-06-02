@@ -1,3 +1,4 @@
+
 module NLP.Summarizer.Highlighter where
 
 import NLP.Summarizer.Article
@@ -23,7 +24,10 @@ selectSentencesByPercent percent article =
       f (r, n) s = if n >= maxWords
                    then (r, n)
                    else (r ++ [s { selected = True }], n + wordCount s)
-      (sentences', _) = foldl' f ([], 0) sentencesByScore
+      (sentences', _) = case sentencesByScore of
+        (x:xs) ->
+          foldl' f ([x { selected = True }], wordCount x) xs
+        [] -> ([], 0)
   in article { sentences = sentences' }
 
 selectNumberOfSentences :: Int -> Article -> Article
